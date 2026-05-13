@@ -1,0 +1,126 @@
+#include "Core/Game.h"
+
+#include "Core/GameIds.h"
+#include "Data/DataLoader.h"
+#include "Data/TextResources.h"
+#include "Entities/Item.h"
+#include "Entities/Rival.h"
+
+#include <algorithm>
+#include <unordered_map>
+#include <unordered_set>
+
+namespace
+{
+std::string locationHint(const std::string &locationId)
+{
+    static const std::unordered_map<std::string, std::string> hintKeys = {
+        {GameIds::kCommandBridgeLocation, "hint.command_bridge"},
+        {GameIds::kReactorSpineLocation, "hint.reactor_spine"},
+        {GameIds::kShuttleBayLocation, "hint.shuttle_bay"}};
+
+    const auto hintIt = hintKeys.find(locationId);
+    if (hintIt != hintKeys.end())
+    {
+        return TextResources::get(hintIt->second);
+    }
+
+    return "";
+}
+
+bool isRoomInspectionTarget(const std::string &target)
+{
+    static const std::unordered_set<std::string> roomTargets = {"", "room", "комната"};
+    return roomTargets.find(target) != roomTargets.end();
+}
+
+bool isRivalInspectionTarget(const std::string &target, const std::string &rivalId)
+{
+    static const std::unordered_set<std::string> rivalAliases = {"enemy", "враг"};
+    return target == rivalId || rivalAliases.find(target) != rivalAliases.end();
+}
+} // namespace
+
+GameCommandResult Game::handleInspect(const std::string &target)
+{
+    auto &locations = DataLoader::getLocations();
+    const Location &current = locations[player.getCurrentLocation()];
+
+    if (isRoomInspectionTarget(target))
+    {
+        GameCommandResult result = inspectCurrentLocation(current);
+        appendEvent(result, GameEventType::InspectRequested, current.id);
+        return result;
+    }
+
+    GameCommandResult result = inspectItemTarget(target, current);
+    if (result.view != ViewKind::None || !result.messages.empty() || !result.events.empty())
+    {
+        appendEvent(result, GameEventType::InspectRequested, target, current.id);
+        return result;
+    }
+
+    result = inspectRivalTarget(target, current);
+    if (result.view != ViewKind::None || !result.messages.empty() || !result.events.empty())
+    {
+        appendEvent(result, GameEventType::InspectRequested, target, current.id);
+        return result;
+    }
+
+    appendEvent(result, GameEventType::ActionRejected, target, current.id, 0, "msg.nothing_useful");
+    appendEvent(result, GameEventType::InspectRequested, target, current.id);
+    return result;
+}
+
+GameCommandResult Game::inspectCurrentLocation(const Location &current) const
+{
+    GameCommandResult result = describeCurrentLocation();
+    const std::string hint = locationHint(current.id);
+    if (!hint.empty())
+    {
+        appendEvent(result, GameEventType::InspectHintShown, current.id, "", 0, hint);
+    }
+    return result;
+}
+
+GameCommandResult Game::inspectItemTarget(const std::string &target, const Location &current) const
+{
+    std::vector<std::string> visibleItemIds = current.itemIds;
+    for (const std::string &itemId : player.getInventory())
+    {
+        if (std::find(visibleItemIds.begin(), visibleItemIds.end(), itemId) == visibleItemIds.end())
+        {
+            visibleItemIds.push_back(itemId);
+        }
+    }
+
+    const std::string resolvedItemId = resolveItemId(target, visibleItemIds);
+    if (resolvedItemId.empty())
+    {
+        return {};
+    }
+
+    GameCommandResult result;
+    appendEvent(result, GameEventType::InspectItemFound, resolvedItemId, current.id);
+    return result;
+}
+
+GameCommandResult Game::inspectRivalTarget(const std::string &target, const Location &current) const
+{
+    const std::string resolvedRivalId = resolveRivalId(target, current);
+    if (resolvedRivalId.empty() && (current.rivalId.empty() || !isRivalInspectionTarget(target, current.rivalId)))
+    {
+        return {};
+    }
+
+    const auto &rivals = DataLoader::getRivals();
+    const auto rivalIt = rivals.find(current.rivalId);
+    if (rivalIt == rivals.end() || current.rivalHp <= 0)
+    {
+        return {};
+    }
+
+    GameCommandResult result;
+    appendEvent(result, GameEventType::InspectRivalFound, current.rivalId, current.id, current.rivalHp);
+    return result;
+}
