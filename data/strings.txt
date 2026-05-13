@@ -1,0 +1,140 @@
+# UI
+title=ЭХО СТАНЦИИ «МАДЖЕСТИК»
+intro.line1=ПОИСКОВО-СПАСАТЕЛЬНАЯ СЛУЖБА // БРИФИНГ ПЕРЕД СТЫКОВКОЙ
+intro.line2=Объект: станция «Маджестик». Статус: дрейф, частичная подача энергии, повторяющийся аварийный сигнал неизвестного происхождения.
+intro.line3=Задача группы реагирования: восстановить доступ к дальнему маяку, локализовать узел заражения и обеспечить эвакуацию.
+objective.title=ЗАДАЧИ:
+objective.step1=Найти ключ доступа.
+objective.step2=Добыть фокусирующую линзу маяка и ключ-карту мостика.
+objective.step3=Устранить первоисточник проблем.
+objective.step4=Активировать маяк и выбраться на шаттле.
+hint.title=ПОДСКАЗКА:
+hint.body=Если нужна справка, введи `помощь` или `help`. Также можно использовать короткие id и алиасы: `взять pistol` или `read archive_signal`.
+location.label=ЛОКАЦИЯ: 
+nearby.label=ЗДЕСЬ:
+logs.label=ТЕРМИНАЛЫ И ЛОГИ:
+threat.label=УГРОЗА: 
+exits.label=ВЫХОДЫ:
+status.health=ЗДОРОВЬЕ: 
+status.attack=АТАКА: 
+status.weapon=АКТИВНОЕ ОРУЖИЕ: 
+status.title=БОЕВЫЕ ПОКАЗАТЕЛИ
+map.title=СХЕМА СТАНЦИИ
+map.position=Текущее положение: 
+map.footer=Схема отражает реальные переходы между отсеками по сторонам света.
+direction.north=север
+direction.south=юг
+direction.east=восток
+direction.west=запад
+hud.title=ТЕКУЩАЯ СВОДКА
+hud.inventory=ИНВЕНТАРЬ: 
+hud.weapon=ОРУЖИЕ: 
+hud.objective=ПРОГРЕСС: 
+hud.last_command=ПОСЛЕДНЯЯ КОМАНДА: 
+hud.last_result=ПОСЛЕДНИЙ РЕЗУЛЬТАТ
+hud.prompt=≫
+hud.none=нет
+hud.mission.access=доступ
+hud.mission.lens=линза
+hud.mission.card=карта
+hud.mission.beacon=маяк
+hud.mission.core=ядро
+help.title=ДОСТУПНЫЕ КОМАНДЫ
+help.line1=  идти [направление]     - перейти в соседний отсек
+help.line2=  взять [предмет]        - подобрать предмет
+help.line3=  использовать [предмет] - применить или экипировать предмет
+help.line4=  читать [лог]           - открыть найденный журнал или список логов
+help.line5=  атаковать              - атаковать текущую угрозу
+help.line6=  осмотреть [цель]       - изучить отсек, предмет или врага
+help.line7=  смотреть               - снова вывести описание текущего отсека
+help.line8=  инвентарь              - показать содержимое инвентаря
+help.line9=  статус                 - показать здоровье и силу атаки
+help.line10=  цель                   - показать состояние задания
+help.line11=  карта                  - показать схему станции
+help.line12=  помощь                 - показать эту справку
+help.footer=Поддерживаются английские алиасы: go, take, use, read, attack, inspect, look, map, help.
+
+# Hints
+hint.command_bridge=Командный пульт требует ключ доступа и фокусирующую линзу дальнего маяка.
+hint.reactor_spine=В реакторной шахте пульсирует Ядро Нароста. Пока оно живо, станция не перестанет отвечать чужим откликом.
+hint.shuttle_bay=Если маяк активирован, а Ядро Нароста уничтожено, шаттл сможет вывести тебя со станции.
+
+# Dynamic location descriptions
+location.command_bridge.beacon_online=Центральный пульт уже дрожит под нагрузкой. Фокусирующая линза стоит в гнезде, а дальний маяк воет в пустоту, вытягивая наружу человеческий сигнал.
+location.reactor_spine.cleared=Реакторная шахта ещё дрожит от остаточного гула, но Ядро Нароста мертво. Между кабелями и почерневшей плотью медленно оседает пар.
+
+# System messages
+msg.move_where=Куда направиться?
+msg.no_safe_path=В этом направлении нет прохода.
+msg.bridge_locked=Командный люк заперт наглухо. Требуется ключ-карта мостика.
+msg.take_what=Что именно взять?
+msg.threat_first=Пока рядом есть угроза, не время рыться в вещах.
+msg.no_such_item_here=Здесь нет предмета с таким названием.
+msg.item_unreadable=Сканер не может распознать предмет.
+msg.received_item=Получено: {name}.
+msg.use_what=Что использовать?
+msg.item_not_in_inventory=Этого предмета нет в инвентаре.
+msg.item_uninterpretable=Предмет невозможно применить.
+msg.weapon_ready=Оружие «{name}» уже готово к бою.
+msg.weapon_armed=Ты переводишь «{name}» в боевой режим. Осталось зарядов: {charges}.
+msg.weapon_spent=Ресурс оружия «{name}» исчерпан. Приходится бросить его.
+msg.lens_wrong_place=Фокусирующую линзу можно установить только на командном мостике.
+msg.bridge_needs_access_key=Пульт мостика требует хотя бы один ключ доступа для активации.
+msg.beacon_already_on=Дальний маяк уже воет в пустоту.
+msg.attack_nothing=Ты бьёшь в пустоту. В ответ только тишина.
+msg.threat_malformed=Данные об угрозе повреждены. Помещение внезапно затихает.
+msg.attack_hit=Ты наносишь удар по {name}. Урон: {damage}.
+msg.health_loss=Получено повреждений: {damage}.
+msg.enemy_health_remaining=У противника осталось {health} здоровья.
+msg.nothing_useful=Здесь не на что смотреть.
+msg.unknown_command=Команда не распознана. Введи `помощь`, чтобы увидеть доступные действия.
+msg.unknown_location=Навигационная система не знает такого отсека.
+msg.hint_line=ПОДСКАЗКА: {text}
+msg.inspect_item=«{name}»: {description}
+msg.inspect_enemy=«{name}»: {description}
+msg.no_such_log=Здесь нет журнала или записи с таким названием.
+msg.no_logs_known=У тебя пока нет найденных записей.
+msg.log_discovered=Найдена запись: {name}.
+msg.log_header=ПРОСМОТР ЗАПИСИ: {name}
+msg.log_archive_title=АРХИВ ЖУРНАЛОВ:
+msg.log_archive_entry=• {name} [{id}]
+
+# Mission status
+mission.title=СОСТОЯНИЕ МИССИИ
+mission.key_access=Ключ доступа:              
+mission.beacon_lens=Фокусирующая линза маяка: 
+mission.bridge_card=Ключ-карта мостика:       
+mission.beacon_on=Маяк активирован:           
+mission.core_dead=Ядро Нароста уничтожено:    
+mission.footer=Для успеха уничтожь Ядро Нароста, активируй дальний маяк и покинь станцию на шаттле.
+
+state.found=найден
+state.found_f=найдена
+state.missing=не найден
+state.missing_f=не найдена
+state.yes=да
+state.no=нет
+
+inventory.title=Инвентарь
+inventory.empty=пусто
+logs.archive_title=Архив журналов
+
+# Victory / Game Over
+gameover.title=СИГНАЛ ПОТЕРЯН
+gameover.body=Станция поглотила тебя. Последний сигнал твоего скафандра растворяется среди её чужих откликов.
+victory.title=ЭВАКУАЦИЯ УСПЕШНА
+victory.line1=За спиной воет дальний маяк. Ядро Нароста уничтожено. Эвакуационный шаттл вырывается из чрева «Маджестика».
+victory.line2=Где-то в бесконечной черноте поисково-спасательный корабль наконец ловит человеческий сигнал дружеских кораблей.
+credits.victory_title=ФИНАЛ
+credits.victory_body=Станция осталась позади, «Маджестик» медленно тонет во мраке.
+credits.gameover_title=ПОСЛЕДНИЕ КАДРЫ
+credits.gameover_body=Станция будто смыкается вокруг тебя. В тишине остаётся только дрожащий свет аварийных ламп.
+credits.title=ТИТРЫ
+credits.line1=Эхо станции «Маджестик» — текстовая научно-фантастическая ролевая игра 
+credits.line2=Спасибо за прохождение!
+credits.line3=
+credits.line4=Но сигнал ещё можно услышать снова...
+credits.line5=
+credits.continue_prompt=Нажми Enter, чтобы перейти к титрам.
+credits.replay_question=Желаешь пройти игру ещё раз? [да/нет]
+credits.replay_invalid=Ответ не распознан. Введи `да` или `нет`.
