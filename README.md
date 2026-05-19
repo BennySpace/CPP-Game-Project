@@ -21,6 +21,14 @@ The player boards a drifting station, explores connected compartments, fights th
 - ASCII station map with current-location highlight
 - standalone release build with a reserve built-in copy of all text data
 
+## Screenshots
+
+![Gameplay screenshot 1](assets/readme/screenshots/screenshot-01.png)
+
+![Gameplay screenshot 2](assets/readme/screenshots/screenshot-02.png)
+
+![Gameplay screenshot 3](assets/readme/screenshots/screenshot-03.png)
+
 ## Project Structure
 
 - `src/Core` - game loop, command handling, combat, progression, view-model construction
