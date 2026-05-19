@@ -1,4 +1,4 @@
-![Echoes of the Majestic banner](assets/readme/banner.jpg)
+![Echoes of the Majestic banner](assets/readme/banner.png)
 
 Echoes of the Majestic is a console sci-fi survival-horror RPG written in C++.
 The player boards a drifting station, explores connected compartments, fights the infestation called the Growth, restores a long-range beacon, and tries to escape alive.
