@@ -12,8 +12,7 @@
       "generator": "NMake Makefiles",
       "binaryDir": "${sourceDir}/out/debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "ENABLE_DEBUG_MODE": "ON"
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -22,8 +21,7 @@
       "generator": "NMake Makefiles",
       "binaryDir": "${sourceDir}/out/release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "ENABLE_DEBUG_MODE": "OFF"
+        "CMAKE_BUILD_TYPE": "Release"
       }
     }
   ],
