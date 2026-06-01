@@ -6,12 +6,24 @@
 #include "Entities/Rival.h"
 
 #include <algorithm>
+#include <stdexcept>
 
 namespace
 {
 bool hasLiveRival(const Location &location)
 {
     return !location.rivalId.empty() && location.rivalHp > 0;
+}
+
+Location &currentLocationOrThrow(std::map<std::string, Location> &locations, const std::string &locationId)
+{
+    const auto currentIt = locations.find(locationId);
+    if (currentIt == locations.end())
+    {
+        throw std::runtime_error("Current location is missing from loaded data: '" + locationId + "'.");
+    }
+
+    return currentIt->second;
 }
 } // namespace
 
@@ -25,7 +37,7 @@ GameCommandResult Game::handleMove(const std::string &direction)
     }
 
     auto &locations = DataLoader::getLocations();
-    Location &current = locations[player.getCurrentLocation()];
+    Location &current = currentLocationOrThrow(locations, player.getCurrentLocation());
     const std::string previousLocationId = current.id;
 
     const auto exitIt = current.exits.find(direction);
@@ -37,6 +49,12 @@ GameCommandResult Game::handleMove(const std::string &direction)
     }
 
     const std::string &nextId = exitIt->second;
+    if (locations.find(nextId) == locations.end())
+    {
+        throw std::runtime_error("Exit points to a missing location: '" + previousLocationId + "' -> '" + nextId +
+                                 "'.");
+    }
+
     if (nextId == GameIds::kCommandBridgeLocation && !player.hasItem(GameIds::kBridgeKeycardItem))
     {
         GameCommandResult result;
@@ -60,7 +78,7 @@ GameCommandResult Game::handleTake(const std::string &itemId)
     }
 
     auto &locations = DataLoader::getLocations();
-    Location &current = locations[player.getCurrentLocation()];
+    Location &current = currentLocationOrThrow(locations, player.getCurrentLocation());
     const std::string resolvedItemId = resolveItemId(itemId, current.itemIds);
 
     if (hasLiveRival(current))
@@ -140,7 +158,7 @@ GameCommandResult Game::handleUse(const std::string &itemId)
 GameCommandResult Game::handleRead(const std::string &target)
 {
     auto &locations = DataLoader::getLocations();
-    Location &current = locations[player.getCurrentLocation()];
+    Location &current = currentLocationOrThrow(locations, player.getCurrentLocation());
 
     if (hasLiveRival(current))
     {
@@ -208,7 +226,7 @@ GameCommandResult Game::handleRead(const std::string &target)
 GameCommandResult Game::handleAttack()
 {
     auto &locations = DataLoader::getLocations();
-    Location &current = locations[player.getCurrentLocation()];
+    Location &current = currentLocationOrThrow(locations, player.getCurrentLocation());
 
     if (!hasLiveRival(current))
     {

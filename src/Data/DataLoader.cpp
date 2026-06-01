@@ -59,6 +59,7 @@ void DataLoader::loadAll()
     loadLogs();
     loadRivals();
     loadLocations();
+    validateLocationLinks();
 }
 
 void DataLoader::loadItems()
@@ -243,6 +244,21 @@ void DataLoader::loadLocations()
         }
 
         locations[location.id] = location;
+    }
+}
+
+void DataLoader::validateLocationLinks()
+{
+    for (const auto &[locationId, location] : locations)
+    {
+        for (const auto &[direction, targetId] : location.exits)
+        {
+            if (locations.find(targetId) == locations.end())
+            {
+                throw std::runtime_error("Unknown exit target in data/locations.txt for location '" + locationId +
+                                         "', direction '" + direction + "': '" + targetId + "'.");
+            }
+        }
     }
 }
 
