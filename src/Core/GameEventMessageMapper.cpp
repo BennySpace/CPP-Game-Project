@@ -77,10 +77,6 @@ MessageTone itemUseTone(const std::string &itemType)
     {
         return MessageTone::Warning;
     }
-    if (itemType == "lens")
-    {
-        return MessageTone::Info;
-    }
     return MessageTone::Normal;
 }
 
