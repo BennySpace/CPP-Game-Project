@@ -3,6 +3,7 @@
 namespace GameIds
 {
 inline constexpr const char *kDockLocation = "dock";
+inline constexpr const char *kIntakeLocation = "intake";
 inline constexpr const char *kArchiveLocation = "archive";
 inline constexpr const char *kMedbayLocation = "medbay";
 inline constexpr const char *kSecurityLocation = "security";

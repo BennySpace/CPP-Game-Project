@@ -22,7 +22,8 @@ std::vector<std::string> buildLocalizedMapLines()
     return {"                            [" + localizeLocationId(GameIds::kDockLocation) + "]",
             "                                     |",
             "                                     |",
-            "[" + localizeLocationId(GameIds::kMedbayLocation) + "] ---- [" + localizeLocationId("intake") + "]",
+            "[" + localizeLocationId(GameIds::kMedbayLocation) + "] ---- [" +
+                localizeLocationId(GameIds::kIntakeLocation) + "]",
             "                                     |",
             "                                     |",
             "                              [" + localizeLocationId(GameIds::kArchiveLocation) + "] ---- [" +

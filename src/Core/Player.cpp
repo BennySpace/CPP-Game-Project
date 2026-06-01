@@ -1,8 +1,10 @@
 #include "Core/Player.h"
 
+#include "Core/GameIds.h"
+
 #include <algorithm>
 
-Player::Player() : currentLocation("dock"), health(85), maxHealth(85), baseAttack(5)
+Player::Player() : currentLocation(GameIds::kDockLocation), health(85), maxHealth(85), baseAttack(5)
 {
 }
 
