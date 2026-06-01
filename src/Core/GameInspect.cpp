@@ -48,27 +48,22 @@ GameCommandResult Game::handleInspect(const std::string &target)
 
     if (isRoomInspectionTarget(target))
     {
-        GameCommandResult result = inspectCurrentLocation(current);
-        appendEvent(result, GameEventType::InspectRequested, current.id);
-        return result;
+        return inspectCurrentLocation(current);
     }
 
     GameCommandResult result = inspectItemTarget(target, current);
     if (result.view != ViewKind::None || !result.messages.empty() || !result.events.empty())
     {
-        appendEvent(result, GameEventType::InspectRequested, target, current.id);
         return result;
     }
 
     result = inspectRivalTarget(target, current);
     if (result.view != ViewKind::None || !result.messages.empty() || !result.events.empty())
     {
-        appendEvent(result, GameEventType::InspectRequested, target, current.id);
         return result;
     }
 
     appendEvent(result, GameEventType::ActionRejected, target, current.id, 0, "msg.nothing_useful");
-    appendEvent(result, GameEventType::InspectRequested, target, current.id);
     return result;
 }
 

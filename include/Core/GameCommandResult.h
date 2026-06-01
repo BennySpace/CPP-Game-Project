@@ -31,15 +31,13 @@ enum class GameEventType
     LogDiscovered,
     LogRead,
     InspectRivalFound,
-    InspectRequested,
-    ObjectiveStateChanged,
     GameWon,
     GameLost
 };
 
 struct GameEvent
 {
-    GameEventType type = GameEventType::InspectRequested;
+    GameEventType type = GameEventType::ActionRejected;
     std::string primaryId;
     std::string secondaryId;
     int amount = 0;

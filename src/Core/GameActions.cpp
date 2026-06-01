@@ -270,7 +270,6 @@ GameCommandResult Game::handleAttack()
         if (current.rivalId == GameIds::kRootHeartRival)
         {
             player.addFlag(GameIds::kRootHeartDestroyedFlag);
-            appendEvent(result, GameEventType::ObjectiveStateChanged, GameIds::kRootHeartDestroyedFlag);
         }
         return result;
     }
@@ -338,7 +337,6 @@ GameCommandResult Game::useLensItem(const std::string &, const Item &item)
     player.addFlag(GameIds::kBeaconOnlineFlag);
     GameCommandResult result;
     appendEvent(result, GameEventType::ItemUsed, item.id, player.getCurrentLocation(), 0, item.type);
-    appendEvent(result, GameEventType::ObjectiveStateChanged, GameIds::kBeaconOnlineFlag);
     return result;
 }
 
