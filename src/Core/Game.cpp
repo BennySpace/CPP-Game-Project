@@ -1,7 +1,7 @@
 #include "Core/Game.h"
 
 #include "Core/CommandParser.h"
-#include "Core/GameEventMessageMapper.h"
+#include "detail/GameEventMessageMapper.h"
 #include "Core/GameIds.h"
 #include "Core/TextUtils.h"
 #include "Data/DataLoader.h"

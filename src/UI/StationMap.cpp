@@ -1,8 +1,8 @@
-#include "UI/StationMap.h"
+#include "detail/StationMap.h"
 
 #include "Core/GameIds.h"
 #include "Data/DataLoader.h"
-#include "UI/ConsoleDecor.h"
+#include "detail/ConsoleDecor.h"
 
 namespace
 {

@@ -1,4 +1,4 @@
-#include "UI/ConsoleDecor.h"
+#include "detail/ConsoleDecor.h"
 
 #include "Data/TextResources.h"
 

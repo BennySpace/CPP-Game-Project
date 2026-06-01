@@ -1,4 +1,4 @@
-#include "Core/GameEventMessageMapper.h"
+#include "detail/GameEventMessageMapper.h"
 
 #include "Data/DataLoader.h"
 #include "Data/TextResources.h"

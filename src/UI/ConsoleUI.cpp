@@ -2,8 +2,8 @@
 #include "UI/ConsoleUI.h"
 
 #include "Data/TextResources.h"
-#include "UI/ConsoleDecor.h"
-#include "UI/StationMap.h"
+#include "detail/ConsoleDecor.h"
+#include "detail/StationMap.h"
 
 #include <algorithm>
 #include <iostream>
