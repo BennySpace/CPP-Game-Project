@@ -161,7 +161,6 @@ void ConsoleUI::showWelcome()
 
     std::cout << color("90", TextResources::get("intro.line1")) << "\n";
     std::cout << color("90", TextResources::get("intro.line2")) << "\n\n";
-    std::cout << color("90", TextResources::get("intro.line3")) << "\n\n";
 
     std::cout << color("1;37", TextResources::get("objective.title")) << "\n";
     for (int index = 1; index <= 4; ++index)
@@ -208,7 +207,7 @@ void ConsoleUI::printLocation(const GameLocationView &location, const GameHudVie
     if (!location.rivalName.empty() && location.rivalHp > 0)
     {
         std::cout << "\n"
-                  << color("31", TextResources::get("threat.label") + location.rivalName + " [" +
+                  << color("31", TextResources::get("threat.label") + " " + location.rivalName + " [" +
                                      std::to_string(location.rivalHp) + " HP]")
                   << "\n";
     }
@@ -220,8 +219,8 @@ void ConsoleUI::printLocation(const GameLocationView &location, const GameHudVie
     }
 
     std::cout << "\n"
-              << TextResources::get("status.health") << hud.health << "/" << hud.maxHealth << color("90", " | ")
-              << TextResources::get("status.attack") << hud.attack << "\n";
+              << TextResources::get("status.health") << " " << hud.health << "/" << hud.maxHealth << color("90", " | ")
+              << TextResources::get("status.attack") << " " << hud.attack << "\n";
 }
 
 void ConsoleUI::printMap(const std::string &currentLocationName)
@@ -231,7 +230,7 @@ void ConsoleUI::printMap(const std::string &currentLocationName)
     {
         std::cout << line << "\n";
     }
-    std::cout << "\n" << color("36", TextResources::get("map.position")) << currentLocationName << "\n";
+    std::cout << "\n" << color("36", TextResources::get("map.position")) << " " << currentLocationName << "\n";
     std::cout << color("90", TextResources::get("map.footer")) << "\n";
 }
 
@@ -324,9 +323,9 @@ bool ConsoleUI::showCreditsAndReplay(bool victory)
 void ConsoleUI::showStatus(const GameHudView &hud)
 {
     printSectionHeader(TextResources::get("status.title"));
-    std::cout << TextResources::get("status.health") << hud.health << "/" << hud.maxHealth << color("90", " | ")
-              << TextResources::get("status.attack") << hud.attack << "\n";
-    std::cout << TextResources::get("status.weapon") << weaponLine(hud) << "\n";
+    std::cout << TextResources::get("status.health") << " " << hud.health << "/" << hud.maxHealth << color("90", " | ")
+              << TextResources::get("status.attack") << " " << hud.attack << "\n";
+    std::cout << TextResources::get("status.weapon") << " " << weaponLine(hud) << "\n";
 }
 
 void ConsoleUI::showObjective(const GameHudView &hud)
@@ -437,21 +436,21 @@ void ConsoleUI::renderFrame(const std::string &lastCommand, const GameViewModel 
     std::cout << "\x1b[2J\x1b[H";
 
     printPanelTop(TextResources::get("hud.title"));
-    printPanelLine(TextResources::get("location.label") + viewModel.hud.currentLocationName + color("90", " | ") +
+    printPanelLine(TextResources::get("location.label") + " " + viewModel.hud.currentLocationName + color("90", " | ") +
                        color("32", "HP ") + std::to_string(viewModel.hud.health) + "/" +
                        std::to_string(viewModel.hud.maxHealth) + color("90", " | ") + color("33", "ATK ") +
                        std::to_string(viewModel.hud.attack),
                    "1;37");
-    printPanelLine(color("31", TextResources::get("threat.label")) + threatLine(viewModel.hud) + color("90", " | ") +
-                       color("36", TextResources::get("exits.label")) + exitsLine(viewModel.hud.exits),
+    printPanelLine(color("31", TextResources::get("threat.label") + " ") + threatLine(viewModel.hud) + color("90", " | ") +
+                       color("36", TextResources::get("exits.label") + " ") + exitsLine(viewModel.hud.exits),
                    "37");
-    printPanelLine(color("33", TextResources::get("hud.weapon")) + weaponLine(viewModel.hud), "37");
-    printPanelLine(color("33", TextResources::get("hud.inventory")) + inventoryLine(viewModel.hud), "37");
-    printPanelLine(color("35", TextResources::get("hud.objective")) + missionLine(viewModel.hud), "37");
+    printPanelLine(color("33", TextResources::get("hud.weapon") + " ") + weaponLine(viewModel.hud), "37");
+    printPanelLine(color("33", TextResources::get("hud.inventory") + " ") + inventoryLine(viewModel.hud), "37");
+    printPanelLine(color("35", TextResources::get("hud.objective") + " ") + missionLine(viewModel.hud), "37");
     printPanelBottom();
 
     printSectionHeader(TextResources::get("hud.last_result"));
-    std::cout << color("36", TextResources::get("hud.last_command"))
+    std::cout << color("36", TextResources::get("hud.last_command") + " ")
               << color("1;37", (lastCommand.empty() ? TextResources::get("hud.none") : lastCommand)) << "\n";
 
     if (viewModel.result.view != ViewKind::None)
