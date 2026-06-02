@@ -42,6 +42,10 @@ The player boards a drifting station, explores connected compartments, fights th
 
 ### CMake Presets
 
+The presets in `CMakePresets.json` use the `NMake Makefiles` generator, so they
+must be run from a Visual Studio Developer Command Prompt (or from a shell
+where the MSVC build environment has already been initialized).
+
 Debug:
 
 ```powershell
@@ -56,7 +60,11 @@ cmake --preset release
 cmake --build --preset build-release
 ```
 
-If `cmake` is not in `PATH`, use Visual Studio Developer Command Prompt or open the folder directly in Visual Studio.
+If `cmake` is not in `PATH`, either:
+
+- open the project in Visual Studio, or
+- run the commands from the Visual Studio Developer Command Prompt, where both
+  `cmake` and the MSVC toolchain are available.
 
 ## Run
 
