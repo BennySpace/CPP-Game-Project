@@ -36,7 +36,6 @@ The player boards a drifting station, explores connected compartments, fights th
 - `src/Data` - loading text assets and fallback to embedded data
 - `include/Entities` - game entities: player, item, location, rival, log entry
 - `data` - editable game content and text assets
-- `docs` - architecture diagrams and supporting documentation
 
 ## Build
 
@@ -89,7 +88,7 @@ Debug builds always write a command log next to the executable.
 Release builds write a log only when launched with:
 
 ```powershell
-.\majestic_station.exe --log-commands
+.\out\release\majestic_station.exe --log-commands
 ```
 
 The log file is created next to the `.exe`:
