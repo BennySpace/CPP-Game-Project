@@ -7,6 +7,7 @@
 #include "Entities/Rival.h"
 
 #include <algorithm>
+#include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -39,12 +40,23 @@ bool isRivalInspectionTarget(const std::string &target, const std::string &rival
     static const std::unordered_set<std::string> rivalAliases = {"enemy", "враг"};
     return target == rivalId || rivalAliases.find(target) != rivalAliases.end();
 }
+
+const Location &currentLocationOrThrow(const std::map<std::string, Location> &locations, const std::string &locationId)
+{
+    const auto currentIt = locations.find(locationId);
+    if (currentIt == locations.end())
+    {
+        throw std::runtime_error("Current location is missing from loaded data: '" + locationId + "'.");
+    }
+
+    return currentIt->second;
+}
 } // namespace
 
 GameCommandResult Game::handleInspect(const std::string &target)
 {
-    auto &locations = DataLoader::getLocations();
-    const Location &current = locations[player.getCurrentLocation()];
+    const auto &locations = DataLoader::getLocations();
+    const Location &current = currentLocationOrThrow(locations, player.getCurrentLocation());
 
     if (isRoomInspectionTarget(target))
     {
