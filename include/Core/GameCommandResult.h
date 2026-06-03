@@ -16,30 +16,25 @@ enum class MessageTone
 enum class GameEventType
 {
     ActionRejected,
-    MoveSucceeded,
     MoveBlocked,
     ItemTaken,
     ItemUseRejected,
     ItemUsed,
     AttackHit,
     WeaponDepleted,
-    ThreatDamaged,
     ThreatDefeated,
     PlayerDamaged,
     InspectHintShown,
     InspectItemFound,
     LogDiscovered,
     LogRead,
-    InspectRivalFound,
-    GameWon,
-    GameLost
+    InspectRivalFound
 };
 
 struct GameEvent
 {
     GameEventType type = GameEventType::ActionRejected;
     std::string primaryId;
-    std::string secondaryId;
     int amount = 0;
     std::string detail;
 };

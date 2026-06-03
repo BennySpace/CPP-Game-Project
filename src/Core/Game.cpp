@@ -30,7 +30,7 @@ GameCommandResult Game::processCommand(const ParsedCommand &command)
     if (!command.isValid)
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ActionRejected, "", "", 0, "msg.unknown_command");
+        appendEvent(result, GameEventType::ActionRejected, "", 0, "msg.unknown_command");
         return result;
     }
 
@@ -63,7 +63,7 @@ GameCommandResult Game::processCommand(const ParsedCommand &command)
     }
 
     GameCommandResult result;
-    appendEvent(result, GameEventType::ActionRejected, "", "", 0, "msg.unknown_command");
+    appendEvent(result, GameEventType::ActionRejected, "", 0, "msg.unknown_command");
     return result;
 }
 
@@ -74,7 +74,7 @@ GameCommandResult Game::describeCurrentLocation() const
     if (it == locations.end())
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ActionRejected, "", "", 0, "msg.unknown_location");
+        appendEvent(result, GameEventType::ActionRejected, "", 0, "msg.unknown_location");
         return result;
     }
 
@@ -87,7 +87,6 @@ void Game::applyEndState(GameCommandResult &result)
         player.hasFlag(GameIds::kRootHeartDestroyedFlag))
     {
         result.view = ViewKind::Victory;
-        appendEvent(result, GameEventType::GameWon, player.getCurrentLocation());
         isGameOver = true;
         return;
     }
@@ -95,7 +94,6 @@ void Game::applyEndState(GameCommandResult &result)
     if (player.getHealth() <= 0)
     {
         result.view = ViewKind::GameOver;
-        appendEvent(result, GameEventType::GameLost, player.getCurrentLocation());
         isGameOver = true;
     }
 }
@@ -228,8 +226,8 @@ void Game::appendFormattedMessage(GameCommandResult &result, MessageTone tone, c
     appendMessage(result, tone, TextResources::format(key, replacements));
 }
 
-void Game::appendEvent(GameCommandResult &result, GameEventType type, const std::string &primaryId,
-                       const std::string &secondaryId, int amount, const std::string &detail)
+void Game::appendEvent(GameCommandResult &result, GameEventType type, const std::string &primaryId, int amount,
+                       const std::string &detail)
 {
-    result.events.push_back({type, primaryId, secondaryId, amount, detail});
+    result.events.push_back({type, primaryId, amount, detail});
 }

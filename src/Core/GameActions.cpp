@@ -32,7 +32,7 @@ GameCommandResult Game::handleMove(const std::string &direction)
     if (direction.empty())
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::MoveBlocked, player.getCurrentLocation(), direction, 0, "msg.move_where");
+        appendEvent(result, GameEventType::MoveBlocked, player.getCurrentLocation(), 0, "msg.move_where");
         return result;
     }
 
@@ -44,7 +44,7 @@ GameCommandResult Game::handleMove(const std::string &direction)
     if (exitIt == current.exits.end())
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::MoveBlocked, previousLocationId, direction, 0, "msg.no_safe_path");
+        appendEvent(result, GameEventType::MoveBlocked, previousLocationId, 0, "msg.no_safe_path");
         return result;
     }
 
@@ -58,14 +58,12 @@ GameCommandResult Game::handleMove(const std::string &direction)
     if (nextId == GameIds::kCommandBridgeLocation && !player.hasItem(GameIds::kBridgeKeycardItem))
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::MoveBlocked, previousLocationId, nextId, 0, "msg.bridge_locked");
+        appendEvent(result, GameEventType::MoveBlocked, previousLocationId, 0, "msg.bridge_locked");
         return result;
     }
 
     player.setCurrentLocation(nextId);
-    GameCommandResult result = describeCurrentLocation();
-    appendEvent(result, GameEventType::MoveSucceeded, previousLocationId, nextId);
-    return result;
+    return describeCurrentLocation();
 }
 
 GameCommandResult Game::handleTake(const std::string &itemId)
@@ -73,7 +71,7 @@ GameCommandResult Game::handleTake(const std::string &itemId)
     if (itemId.empty())
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ActionRejected, "", "", 0, "msg.take_what");
+        appendEvent(result, GameEventType::ActionRejected, "", 0, "msg.take_what");
         return result;
     }
 
@@ -84,7 +82,7 @@ GameCommandResult Game::handleTake(const std::string &itemId)
     if (hasLiveRival(current))
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ActionRejected, current.id, "", 0, "msg.threat_first");
+        appendEvent(result, GameEventType::ActionRejected, current.id, 0, "msg.threat_first");
         return result;
     }
 
@@ -92,7 +90,7 @@ GameCommandResult Game::handleTake(const std::string &itemId)
     if (itemIt == current.itemIds.end())
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ActionRejected, itemId, current.id, 0, "msg.no_such_item_here");
+        appendEvent(result, GameEventType::ActionRejected, itemId, 0, "msg.no_such_item_here");
         return result;
     }
 
@@ -101,7 +99,7 @@ GameCommandResult Game::handleTake(const std::string &itemId)
     if (dataIt == items.end())
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ActionRejected, resolvedItemId, current.id, 0, "msg.item_unreadable");
+        appendEvent(result, GameEventType::ActionRejected, resolvedItemId, 0, "msg.item_unreadable");
         return result;
     }
 
@@ -109,7 +107,7 @@ GameCommandResult Game::handleTake(const std::string &itemId)
     current.itemIds.erase(itemIt);
 
     GameCommandResult result;
-    appendEvent(result, GameEventType::ItemTaken, resolvedItemId, player.getCurrentLocation());
+    appendEvent(result, GameEventType::ItemTaken, resolvedItemId);
     return result;
 }
 
@@ -118,7 +116,7 @@ GameCommandResult Game::handleUse(const std::string &itemId)
     if (itemId.empty())
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ItemUseRejected, itemId, "", 0, "msg.use_what");
+        appendEvent(result, GameEventType::ItemUseRejected, itemId, 0, "msg.use_what");
         return result;
     }
 
@@ -126,7 +124,7 @@ GameCommandResult Game::handleUse(const std::string &itemId)
     if (resolvedItemId.empty() || !player.hasItem(resolvedItemId))
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ItemUseRejected, itemId, "", 0, "msg.item_not_in_inventory");
+        appendEvent(result, GameEventType::ItemUseRejected, itemId, 0, "msg.item_not_in_inventory");
         return result;
     }
 
@@ -135,7 +133,7 @@ GameCommandResult Game::handleUse(const std::string &itemId)
     if (itemIt == items.end())
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ItemUseRejected, resolvedItemId, "", 0, "msg.item_uninterpretable");
+        appendEvent(result, GameEventType::ItemUseRejected, resolvedItemId, 0, "msg.item_uninterpretable");
         return result;
     }
 
@@ -163,7 +161,7 @@ GameCommandResult Game::handleRead(const std::string &target)
     if (hasLiveRival(current))
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ActionRejected, current.id, "", 0, "msg.threat_first");
+        appendEvent(result, GameEventType::ActionRejected, current.id, 0, "msg.threat_first");
         return result;
     }
 
@@ -172,7 +170,7 @@ GameCommandResult Game::handleRead(const std::string &target)
         GameCommandResult result;
         if (player.getKnownLogs().empty())
         {
-            appendEvent(result, GameEventType::ActionRejected, "", player.getCurrentLocation(), 0, "msg.no_logs_known");
+            appendEvent(result, GameEventType::ActionRejected, "", 0, "msg.no_logs_known");
             return result;
         }
 
@@ -203,7 +201,7 @@ GameCommandResult Game::handleRead(const std::string &target)
     if (resolvedLogId.empty())
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ActionRejected, target, current.id, 0, "msg.no_such_log");
+        appendEvent(result, GameEventType::ActionRejected, target, 0, "msg.no_such_log");
         return result;
     }
 
@@ -216,10 +214,10 @@ GameCommandResult Game::handleRead(const std::string &target)
     GameCommandResult result;
     if (newlyDiscovered)
     {
-        appendEvent(result, GameEventType::LogDiscovered, resolvedLogId, current.id);
+        appendEvent(result, GameEventType::LogDiscovered, resolvedLogId);
     }
 
-    appendEvent(result, GameEventType::LogRead, resolvedLogId, current.id);
+    appendEvent(result, GameEventType::LogRead, resolvedLogId);
     return result;
 }
 
@@ -231,7 +229,7 @@ GameCommandResult Game::handleAttack()
     if (!hasLiveRival(current))
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ActionRejected, current.id, "", 0, "msg.attack_nothing");
+        appendEvent(result, GameEventType::ActionRejected, current.id, 0, "msg.attack_nothing");
         return result;
     }
 
@@ -241,8 +239,8 @@ GameCommandResult Game::handleAttack()
     {
         current.rivalHp = 0;
         GameCommandResult result;
-        appendEvent(result, GameEventType::ActionRejected, current.rivalId, current.id, 0, "msg.threat_malformed");
-        appendEvent(result, GameEventType::ThreatDefeated, current.rivalId, current.id);
+        appendEvent(result, GameEventType::ActionRejected, current.rivalId, 0, "msg.threat_malformed");
+        appendEvent(result, GameEventType::ThreatDefeated, current.rivalId);
         return result;
     }
 
@@ -252,13 +250,13 @@ GameCommandResult Game::handleAttack()
     current.rivalHp -= attackDamage;
 
     GameCommandResult result;
-    appendEvent(result, GameEventType::AttackHit, current.rivalId, current.id, attackDamage);
+    appendEvent(result, GameEventType::AttackHit, current.rivalId, attackDamage);
     if (!weaponId.empty())
     {
         const int remainingCharges = player.consumeActiveWeaponCharge();
         if (remainingCharges <= 0)
         {
-            appendEvent(result, GameEventType::WeaponDepleted, weaponId, current.id);
+            appendEvent(result, GameEventType::WeaponDepleted, weaponId);
             player.removeItem(weaponId);
         }
     }
@@ -266,7 +264,7 @@ GameCommandResult Game::handleAttack()
     if (current.rivalHp <= 0)
     {
         current.rivalHp = 0;
-        appendEvent(result, GameEventType::ThreatDefeated, current.rivalId, current.id);
+        appendEvent(result, GameEventType::ThreatDefeated, current.rivalId);
         if (current.rivalId == GameIds::kRootHeartRival)
         {
             player.addFlag(GameIds::kRootHeartDestroyedFlag);
@@ -274,9 +272,8 @@ GameCommandResult Game::handleAttack()
         return result;
     }
 
-    appendEvent(result, GameEventType::ThreatDamaged, current.rivalId, current.id, current.rivalHp);
     player.takeDamage(rival.atk);
-    appendEvent(result, GameEventType::PlayerDamaged, current.rivalId, current.id, rival.atk);
+    appendEvent(result, GameEventType::PlayerDamaged, current.rivalId, rival.atk);
     return result;
 }
 
@@ -286,7 +283,7 @@ GameCommandResult Game::useHealingItem(const std::string &itemId, const Item &it
     player.removeItem(itemId);
 
     GameCommandResult result;
-    appendEvent(result, GameEventType::ItemUsed, itemId, player.getCurrentLocation(), item.value, item.type);
+    appendEvent(result, GameEventType::ItemUsed, itemId, item.value, item.type);
     return result;
 }
 
@@ -295,14 +292,14 @@ GameCommandResult Game::useWeaponItem(const std::string &itemId, const Item &ite
     if (player.getActiveWeaponId() == itemId)
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ItemUseRejected, itemId, "", 0, "msg.weapon_ready");
+        appendEvent(result, GameEventType::ItemUseRejected, itemId, 0, "msg.weapon_ready");
         return result;
     }
 
     player.armWeapon(itemId, item.value, item.charges);
 
     GameCommandResult result;
-    appendEvent(result, GameEventType::ItemUsed, itemId, player.getCurrentLocation(), item.value, item.type);
+    appendEvent(result, GameEventType::ItemUsed, itemId, item.value, item.type);
     appendFormattedMessage(result, MessageTone::Info, "msg.weapon_armed",
                            {{"name", item.name}, {"charges", std::to_string(player.getWeaponCharges(itemId))}});
     return result;
@@ -313,37 +310,34 @@ GameCommandResult Game::useLensItem(const std::string &, const Item &item)
     if (player.getCurrentLocation() != GameIds::kCommandBridgeLocation)
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ItemUseRejected, item.id, player.getCurrentLocation(), 0,
-                    "msg.lens_wrong_place");
+        appendEvent(result, GameEventType::ItemUseRejected, item.id, 0, "msg.lens_wrong_place");
         return result;
     }
 
     if (!player.hasItem(GameIds::kAccessKeyItem))
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ItemUseRejected, item.id, player.getCurrentLocation(), 0,
-                    "msg.bridge_needs_access_key");
+        appendEvent(result, GameEventType::ItemUseRejected, item.id, 0, "msg.bridge_needs_access_key");
         return result;
     }
 
     if (player.hasFlag(GameIds::kBeaconOnlineFlag))
     {
         GameCommandResult result;
-        appendEvent(result, GameEventType::ItemUseRejected, item.id, player.getCurrentLocation(), 0,
-                    "msg.beacon_already_on");
+        appendEvent(result, GameEventType::ItemUseRejected, item.id, 0, "msg.beacon_already_on");
         return result;
     }
 
     player.addFlag(GameIds::kBeaconOnlineFlag);
     GameCommandResult result;
-    appendEvent(result, GameEventType::ItemUsed, item.id, player.getCurrentLocation(), 0, item.type);
+    appendEvent(result, GameEventType::ItemUsed, item.id, 0, item.type);
     return result;
 }
 
 GameCommandResult Game::useGenericItem(const std::string &, const Item &item)
 {
     GameCommandResult result;
-    appendEvent(result, GameEventType::ItemUsed, item.id, player.getCurrentLocation(), item.value, item.type);
+    appendEvent(result, GameEventType::ItemUsed, item.id, item.value, item.type);
     return result;
 }
 

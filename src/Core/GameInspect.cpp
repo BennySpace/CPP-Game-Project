@@ -75,7 +75,7 @@ GameCommandResult Game::handleInspect(const std::string &target)
         return result;
     }
 
-    appendEvent(result, GameEventType::ActionRejected, target, current.id, 0, "msg.nothing_useful");
+    appendEvent(result, GameEventType::ActionRejected, target, 0, "msg.nothing_useful");
     return result;
 }
 
@@ -85,7 +85,7 @@ GameCommandResult Game::inspectCurrentLocation(const Location &current) const
     const std::string hint = locationHint(current.id);
     if (!hint.empty())
     {
-        appendEvent(result, GameEventType::InspectHintShown, current.id, "", 0, hint);
+        appendEvent(result, GameEventType::InspectHintShown, current.id, 0, hint);
     }
     return result;
 }
@@ -108,7 +108,7 @@ GameCommandResult Game::inspectItemTarget(const std::string &target, const Locat
     }
 
     GameCommandResult result;
-    appendEvent(result, GameEventType::InspectItemFound, resolvedItemId, current.id);
+    appendEvent(result, GameEventType::InspectItemFound, resolvedItemId);
     return result;
 }
 
@@ -128,6 +128,6 @@ GameCommandResult Game::inspectRivalTarget(const std::string &target, const Loca
     }
 
     GameCommandResult result;
-    appendEvent(result, GameEventType::InspectRivalFound, current.rivalId, current.id, current.rivalHp);
+    appendEvent(result, GameEventType::InspectRivalFound, current.rivalId, current.rivalHp);
     return result;
 }

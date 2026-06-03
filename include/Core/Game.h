@@ -51,7 +51,7 @@ class Game
     static void appendFormattedMessage(GameCommandResult &result, MessageTone tone, const std::string &key,
                                        std::initializer_list<std::pair<const std::string, std::string>> replacements);
     static void appendEvent(GameCommandResult &result, GameEventType type, const std::string &primaryId = "",
-                            const std::string &secondaryId = "", int amount = 0, const std::string &detail = "");
+                            int amount = 0, const std::string &detail = "");
     void resetSession();
     GameViewModel buildViewModel(const GameCommandResult &result) const;
     GameLocationView buildLocationView() const;
