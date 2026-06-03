@@ -119,7 +119,6 @@ GameViewModel Game::buildViewModel(const GameCommandResult &result) const
     hud.currentLocationName = localizeLocationId(player.getCurrentLocation());
     hud.health = player.getHealth();
     hud.maxHealth = player.getMaxHealth();
-    hud.baseAttack = player.getBaseAttack();
     hud.attack = player.getAttack();
     fillMissionState(hud, player);
 

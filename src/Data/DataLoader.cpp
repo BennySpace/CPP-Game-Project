@@ -200,46 +200,24 @@ void DataLoader::loadLocations()
             location.itemIds = DataUtils::split(tokens[4], ',');
         }
 
-        if (tokens.size() > 5)
+        if (tokens.size() > 5 && !tokens[5].empty())
         {
-            // Support both generations of the content format:
-            // - legacy: exits|items|rival
-            // - current: exits|items|logs|rival
-            if (tokens.size() == 6)
+            location.logIds = DataUtils::split(tokens[5], ',');
+        }
+
+        if (tokens.size() > 6 && !tokens[6].empty())
+        {
+            location.rivalId = tokens[6];
+            const auto rivalIt = rivals.find(location.rivalId);
+            if (rivalIt != rivals.end())
             {
-                const auto rivalIt = rivals.find(tokens[5]);
-                if (rivalIt != rivals.end())
-                {
-                    location.rivalId = tokens[5];
-                    location.rivalHp = rivalIt->second.maxHp;
-                }
-                else if (!tokens[5].empty())
-                {
-                    location.logIds = DataUtils::split(tokens[5], ',');
-                }
+                location.rivalHp = rivalIt->second.maxHp;
             }
             else
             {
-                if (!tokens[5].empty())
-                {
-                    location.logIds = DataUtils::split(tokens[5], ',');
-                }
-
-                if (!tokens[6].empty())
-                {
-                    location.rivalId = tokens[6];
-                    const auto rivalIt = rivals.find(location.rivalId);
-                    if (rivalIt != rivals.end())
-                    {
-                        location.rivalHp = rivalIt->second.maxHp;
-                    }
-                    else
-                    {
-                        throw std::runtime_error("Unknown rival id in data/locations.txt at line " +
-                                                 std::to_string(lineNumber) + " for location '" + location.id + "': '" +
-                                                 location.rivalId + "'.");
-                    }
-                }
+                throw std::runtime_error("Unknown rival id in data/locations.txt at line " +
+                                         std::to_string(lineNumber) + " for location '" + location.id + "': '" +
+                                         location.rivalId + "'.");
             }
         }
 

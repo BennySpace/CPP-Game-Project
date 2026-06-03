@@ -2,7 +2,6 @@
 #include "Core/CommandLogger.h"
 #include "Core/Game.h"
 
-#include "Data/DataLoader.h"
 #include "Data/TextResources.h"
 #include "UI/ConsoleUI.h"
 
