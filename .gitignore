@@ -51,6 +51,7 @@ TestResult*/
 coverage*.json
 coverage*.xml
 coverage*.info
+tmp*.txt
 
 # Python cache (utility scripts)
 __pycache__/
