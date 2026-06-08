@@ -1,22 +1,12 @@
 #include "Core/Game.h"
 
 #include "Core/GameIds.h"
+#include "Core/TextUtils.h"
 #include "Data/DataLoader.h"
 #include "Data/TextResources.h"
 
 namespace
 {
-std::string localizeLocationId(const std::string &locationId)
-{
-    const auto &locations = DataLoader::getLocations();
-    const auto it = locations.find(locationId);
-    if (it != locations.end())
-    {
-        return it->second.name;
-    }
-    return locationId;
-}
-
 std::string currentLocationDescription(const Player &player, const Location &location)
 {
     if (location.id == GameIds::kCommandBridgeLocation && player.hasFlag(GameIds::kBeaconOnlineFlag))
@@ -94,7 +84,7 @@ void fillLocationState(GameHudView &hud, const Location &location)
     hud.exits.reserve(location.exits.size());
     for (const auto &[directionId, targetId] : location.exits)
     {
-        hud.exits.push_back({directionId, localizeLocationId(targetId)});
+        hud.exits.push_back({directionId, TextUtils::localizeLocationId(targetId)});
     }
 
     if (!location.rivalId.empty() && location.rivalHp > 0)
@@ -116,7 +106,7 @@ GameViewModel Game::buildViewModel(const GameCommandResult &result) const
     viewModel.result = result;
 
     GameHudView hud;
-    hud.currentLocationName = localizeLocationId(player.getCurrentLocation());
+    hud.currentLocationName = TextUtils::localizeLocationId(player.getCurrentLocation());
     hud.health = player.getHealth();
     hud.maxHealth = player.getMaxHealth();
     hud.attack = player.getAttack();
@@ -198,7 +188,7 @@ GameLocationView Game::buildLocationView() const
 
     for (const auto &[directionId, targetId] : location.exits)
     {
-        locationView.exits.push_back({directionId, localizeLocationId(targetId)});
+        locationView.exits.push_back({directionId, TextUtils::localizeLocationId(targetId)});
     }
 
     return locationView;

@@ -1,5 +1,7 @@
 #include "Core/TextUtils.h"
 
+#include "Data/DataLoader.h"
+
 #include <algorithm>
 
 #ifdef _WIN32
@@ -109,5 +111,17 @@ std::string normalizeLookupToken(const std::string &text, bool replaceSpacesWith
     }
 
     return normalized;
+}
+
+std::string localizeLocationId(const std::string &locationId)
+{
+    const auto &locations = DataLoader::getLocations();
+    const auto it = locations.find(locationId);
+    if (it != locations.end())
+    {
+        return it->second.name;
+    }
+
+    return locationId;
 }
 } // namespace TextUtils

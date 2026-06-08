@@ -1,39 +1,28 @@
 #include "detail/StationMap.h"
 
 #include "Core/GameIds.h"
-#include "Data/DataLoader.h"
+#include "Core/TextUtils.h"
 #include "detail/ConsoleDecor.h"
 
 namespace
 {
-std::string localizeLocationId(const std::string &locationId)
-{
-    const auto &locations = DataLoader::getLocations();
-    const auto it = locations.find(locationId);
-    if (it != locations.end())
-    {
-        return it->second.name;
-    }
-    return locationId;
-}
-
 std::vector<std::string> buildLocalizedMapLines()
 {
-    return {"                            [" + localizeLocationId(GameIds::kDockLocation) + "]",
+    return {"                            [" + TextUtils::localizeLocationId(GameIds::kDockLocation) + "]",
             "                                     |",
             "                                     |",
-            "[" + localizeLocationId(GameIds::kMedbayLocation) + "] ---- [" +
-                localizeLocationId(GameIds::kIntakeLocation) + "]",
+            "[" + TextUtils::localizeLocationId(GameIds::kMedbayLocation) + "] ---- [" +
+                TextUtils::localizeLocationId(GameIds::kIntakeLocation) + "]",
             "                                     |",
             "                                     |",
-            "                              [" + localizeLocationId(GameIds::kArchiveLocation) + "] ---- [" +
-                localizeLocationId(GameIds::kMachineShopLocation) + "] ---- [" +
-                localizeLocationId(GameIds::kReactorSpineLocation) + "]",
+            "                              [" + TextUtils::localizeLocationId(GameIds::kArchiveLocation) + "] ---- [" +
+                TextUtils::localizeLocationId(GameIds::kMachineShopLocation) + "] ---- [" +
+                TextUtils::localizeLocationId(GameIds::kReactorSpineLocation) + "]",
             "                                     |",
             "                                     |",
-            "                               [" + localizeLocationId(GameIds::kSecurityLocation) + "] ---- [" +
-                localizeLocationId(GameIds::kCommandBridgeLocation) + "] ---- [" +
-                localizeLocationId(GameIds::kShuttleBayLocation) + "]"};
+            "                               [" + TextUtils::localizeLocationId(GameIds::kSecurityLocation) + "] ---- [" +
+                TextUtils::localizeLocationId(GameIds::kCommandBridgeLocation) + "] ---- [" +
+                TextUtils::localizeLocationId(GameIds::kShuttleBayLocation) + "]"};
 }
 } // namespace
 

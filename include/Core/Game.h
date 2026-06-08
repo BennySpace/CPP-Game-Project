@@ -35,8 +35,8 @@ class Game
     GameCommandResult useLensItem(const std::string &itemId, const Item &item);
     GameCommandResult useGenericItem(const std::string &itemId, const Item &item);
     GameCommandResult inspectCurrentLocation(const Location &current) const;
-    GameCommandResult inspectItemTarget(const std::string &target, const Location &current) const;
-    GameCommandResult inspectRivalTarget(const std::string &target, const Location &current) const;
+    bool inspectItemTarget(const std::string &target, const Location &current, GameCommandResult &result) const;
+    bool inspectRivalTarget(const std::string &target, const Location &current, GameCommandResult &result) const;
     GameCommandResult describeCurrentLocation() const;
     void applyEndState(GameCommandResult &result);
     static std::string resolveItemId(const std::string &target, const std::vector<std::string> &candidateItemIds);
@@ -45,6 +45,8 @@ class Game
     static const std::unordered_map<std::string, CommandHandler> &commandHandlers();
     static const std::unordered_map<std::string, ViewKind> &commandViews();
     static const std::unordered_map<std::string, ItemUseHandler> &itemUseHandlers();
+    static const std::unordered_map<std::string, ItemUseHandler> &itemUseOverrides();
+    static ItemUseHandler resolveItemUseHandler(const Item &item);
     static GameCommandResult makeViewResult(ViewKind view);
     static void appendMessage(GameCommandResult &result, MessageTone tone, const std::string &text);
     static void appendResourceMessage(GameCommandResult &result, MessageTone tone, const std::string &key);

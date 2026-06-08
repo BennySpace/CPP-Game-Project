@@ -63,14 +63,13 @@ GameCommandResult Game::handleInspect(const std::string &target)
         return inspectCurrentLocation(current);
     }
 
-    GameCommandResult result = inspectItemTarget(target, current);
-    if (result.view != ViewKind::None || !result.messages.empty() || !result.events.empty())
+    GameCommandResult result;
+    if (inspectItemTarget(target, current, result))
     {
         return result;
     }
 
-    result = inspectRivalTarget(target, current);
-    if (result.view != ViewKind::None || !result.messages.empty() || !result.events.empty())
+    if (inspectRivalTarget(target, current, result))
     {
         return result;
     }
@@ -90,7 +89,7 @@ GameCommandResult Game::inspectCurrentLocation(const Location &current) const
     return result;
 }
 
-GameCommandResult Game::inspectItemTarget(const std::string &target, const Location &current) const
+bool Game::inspectItemTarget(const std::string &target, const Location &current, GameCommandResult &result) const
 {
     std::vector<std::string> visibleItemIds = current.itemIds;
     for (const std::string &itemId : player.getInventory())
@@ -104,30 +103,28 @@ GameCommandResult Game::inspectItemTarget(const std::string &target, const Locat
     const std::string resolvedItemId = resolveItemId(target, visibleItemIds);
     if (resolvedItemId.empty())
     {
-        return {};
+        return false;
     }
 
-    GameCommandResult result;
     appendEvent(result, GameEventType::InspectItemFound, resolvedItemId);
-    return result;
+    return true;
 }
 
-GameCommandResult Game::inspectRivalTarget(const std::string &target, const Location &current) const
+bool Game::inspectRivalTarget(const std::string &target, const Location &current, GameCommandResult &result) const
 {
     const std::string resolvedRivalId = resolveRivalId(target, current);
     if (resolvedRivalId.empty() && (current.rivalId.empty() || !isRivalInspectionTarget(target, current.rivalId)))
     {
-        return {};
+        return false;
     }
 
     const auto &rivals = DataLoader::getRivals();
     const auto rivalIt = rivals.find(current.rivalId);
     if (rivalIt == rivals.end() || current.rivalHp <= 0)
     {
-        return {};
+        return false;
     }
 
-    GameCommandResult result;
     appendEvent(result, GameEventType::InspectRivalFound, current.rivalId, current.rivalHp);
-    return result;
+    return true;
 }

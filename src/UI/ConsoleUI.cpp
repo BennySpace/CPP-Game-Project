@@ -68,20 +68,28 @@ std::string weaponLine(const GameHudView &hud)
 
 std::string missionLine(const GameHudView &hud)
 {
-    return TextResources::get("hud.mission.access") + " " +
-           (hud.hasAccessKey ? color("32", TextResources::get("state.yes"))
-                             : color("31", TextResources::get("state.no"))) +
-           color("90", " | ") + TextResources::get("hud.mission.lens") + " " +
-           (hud.hasLens ? color("32", TextResources::get("state.yes")) : color("31", TextResources::get("state.no"))) +
-           color("90", " | ") + TextResources::get("hud.mission.card") + " " +
-           (hud.hasKeycard ? color("32", TextResources::get("state.yes"))
-                           : color("31", TextResources::get("state.no"))) +
-           color("90", " | ") + TextResources::get("hud.mission.beacon") + " " +
-           (hud.beaconOnline ? color("32", TextResources::get("state.yes"))
-                             : color("31", TextResources::get("state.no"))) +
-           color("90", " | ") + TextResources::get("hud.mission.core") + " " +
-           (hud.rootHeartDestroyed ? color("32", TextResources::get("state.yes"))
-                                   : color("31", TextResources::get("state.no")));
+    const std::string yes = TextResources::get("state.yes");
+    const std::string no = TextResources::get("state.no");
+    const std::vector<std::pair<std::string, bool>> checkpoints = {
+        {TextResources::get("hud.mission.access"), hud.hasAccessKey},
+        {TextResources::get("hud.mission.lens"), hud.hasLens},
+        {TextResources::get("hud.mission.card"), hud.hasKeycard},
+        {TextResources::get("hud.mission.beacon"), hud.beaconOnline},
+        {TextResources::get("hud.mission.core"), hud.rootHeartDestroyed}};
+
+    std::string result;
+    for (std::size_t index = 0; index < checkpoints.size(); ++index)
+    {
+        const auto &[label, completed] = checkpoints[index];
+        if (!result.empty())
+        {
+            result += color("90", " | ");
+        }
+
+        result += label + " " + (completed ? color("32", yes) : color("31", no));
+    }
+
+    return result;
 }
 
 std::string threatLine(const GameHudView &hud)

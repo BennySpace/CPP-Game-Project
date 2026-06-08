@@ -27,6 +27,9 @@ GameCommandResult Game::executeCommand(const std::string &rawCommand)
 
 GameCommandResult Game::processCommand(const ParsedCommand &command)
 {
+    const auto &views = commandViews();
+    const auto &handlers = commandHandlers();
+
     if (!command.isValid)
     {
         GameCommandResult result;
@@ -50,14 +53,14 @@ GameCommandResult Game::processCommand(const ParsedCommand &command)
         return handleAttack();
     }
 
-    const auto viewIt = commandViews().find(command.canonicalVerb);
-    if (viewIt != commandViews().end())
+    const auto viewIt = views.find(command.canonicalVerb);
+    if (viewIt != views.end())
     {
         return makeViewResult(viewIt->second);
     }
 
-    const auto handlerIt = commandHandlers().find(command.canonicalVerb);
-    if (handlerIt != commandHandlers().end())
+    const auto handlerIt = handlers.find(command.canonicalVerb);
+    if (handlerIt != handlers.end())
     {
         return (this->*handlerIt->second)(command.argument);
     }

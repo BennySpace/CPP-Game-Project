@@ -138,19 +138,13 @@ GameCommandResult Game::handleUse(const std::string &itemId)
     }
 
     const Item &item = itemIt->second;
-    if (resolvedItemId == GameIds::kLensItem)
-    {
-        return useLensItem(resolvedItemId, item);
-    }
-
-    const auto &handlers = itemUseHandlers();
-    const auto handlerIt = handlers.find(item.type);
-    if (handlerIt == handlers.end())
+    const ItemUseHandler handler = resolveItemUseHandler(item);
+    if (handler == nullptr)
     {
         return useGenericItem(resolvedItemId, item);
     }
 
-    return (this->*handlerIt->second)(resolvedItemId, item);
+    return (this->*handler)(resolvedItemId, item);
 }
 
 GameCommandResult Game::handleRead(const std::string &target)
@@ -347,4 +341,30 @@ const std::unordered_map<std::string, Game::ItemUseHandler> &Game::itemUseHandle
                                                                              {"weapon", &Game::useWeaponItem}};
 
     return handlers;
+}
+
+const std::unordered_map<std::string, Game::ItemUseHandler> &Game::itemUseOverrides()
+{
+    static const std::unordered_map<std::string, ItemUseHandler> overrides = {{GameIds::kLensItem, &Game::useLensItem}};
+
+    return overrides;
+}
+
+Game::ItemUseHandler Game::resolveItemUseHandler(const Item &item)
+{
+    const auto &overrides = itemUseOverrides();
+    const auto overrideIt = overrides.find(item.id);
+    if (overrideIt != overrides.end())
+    {
+        return overrideIt->second;
+    }
+
+    const auto &handlers = itemUseHandlers();
+    const auto handlerIt = handlers.find(item.type);
+    if (handlerIt != handlers.end())
+    {
+        return handlerIt->second;
+    }
+
+    return nullptr;
 }
