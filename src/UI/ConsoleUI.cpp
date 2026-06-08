@@ -442,6 +442,10 @@ void ConsoleUI::renderMessages(const GameCommandResult &result)
 void ConsoleUI::renderFrame(const std::string &lastCommand, const GameViewModel &viewModel)
 {
     std::cout << "\x1b[2J\x1b[H";
+    const bool hasView = viewModel.result.view != ViewKind::None;
+    const bool hasMessages = !viewModel.result.messages.empty();
+    const bool isGameOverView = viewModel.result.view == ViewKind::GameOver;
+    const bool isFinalView = isGameOverView || viewModel.result.view == ViewKind::Victory;
 
     printPanelTop(TextResources::get("hud.title"));
     printPanelLine(TextResources::get("location.label") + " " + viewModel.hud.currentLocationName + color("90", " | ") +
@@ -461,19 +465,26 @@ void ConsoleUI::renderFrame(const std::string &lastCommand, const GameViewModel 
     std::cout << color("36", TextResources::get("hud.last_command") + " ")
               << color("1;37", (lastCommand.empty() ? TextResources::get("hud.none") : lastCommand)) << "\n";
 
-    if (viewModel.result.view != ViewKind::None)
+    if (hasMessages && isGameOverView)
     {
-        renderView(viewModel);
-    }
-
-    if (viewModel.result.view != ViewKind::None || !viewModel.result.messages.empty())
-    {
-        if (viewModel.result.view != ViewKind::None)
-        {
-            std::cout << "\n";
-        }
+        std::cout << "\n";
         renderMessages(viewModel.result);
     }
 
-    std::cout << "\n" << color("1;36", TextResources::get("hud.prompt")) << " ";
+    if (hasView)
+    {
+        std::cout << "\n";
+        renderView(viewModel);
+    }
+
+    if (hasMessages && !isGameOverView)
+    {
+        std::cout << "\n";
+        renderMessages(viewModel.result);
+    }
+
+    if (!isFinalView)
+    {
+        std::cout << "\n" << color("1;36", TextResources::get("hud.prompt")) << " ";
+    }
 }
