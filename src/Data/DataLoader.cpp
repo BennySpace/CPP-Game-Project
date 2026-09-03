@@ -5,9 +5,11 @@
 
 #include <fstream>
 #include <memory>
+#include <map>
 #include <sstream>
 #include <stdexcept>
 #include <string_view>
+#include <utility>
 
 std::map<std::string, Item> DataLoader::items;
 std::map<std::string, LogEntry> DataLoader::logs;
@@ -47,6 +49,38 @@ int parseIntOrThrow(const std::string &value, const char *fileName, int lineNumb
                                  "': '" + value + "'.");
     }
 }
+
+[[noreturn]] void throwInvalidRecord(const char *fileName, int lineNumber, const std::string &reason)
+{
+    throw std::runtime_error(std::string("Invalid record in ") + fileName + " at line " +
+                             std::to_string(lineNumber) + ": " + reason + ".");
+}
+
+template <typename Record>
+void insertRecordOrThrow(std::map<std::string, Record> &records, Record record, const char *fileName, int lineNumber)
+{
+    if (record.id.empty())
+    {
+        throwInvalidRecord(fileName, lineNumber, "id must not be empty");
+    }
+
+    const auto [it, inserted] = records.emplace(record.id, std::move(record));
+    if (!inserted)
+    {
+        throwInvalidRecord(fileName, lineNumber, "duplicate id '" + it->first + "'");
+    }
+}
+
+void requireNonNegative(int value, const char *fileName, int lineNumber, const char *fieldName,
+                        const std::string &recordId)
+{
+    if (value < 0)
+    {
+        throwInvalidRecord(fileName, lineNumber,
+                           "record '" + recordId + "' has negative " + fieldName + " '" +
+                               std::to_string(value) + "'");
+    }
+}
 } // namespace
 
 void DataLoader::loadAll()
@@ -59,7 +93,7 @@ void DataLoader::loadAll()
     loadLogs();
     loadRivals();
     loadLocations();
-    validateLocationLinks();
+    validateGameData();
 }
 
 void DataLoader::loadItems()
@@ -80,7 +114,7 @@ void DataLoader::loadItems()
         const auto tokens = DataUtils::split(line, '|');
         if (tokens.size() < 4)
         {
-            continue;
+            throwInvalidRecord("data/items.txt", lineNumber, "expected at least 4 fields");
         }
 
         Item item;
@@ -92,7 +126,9 @@ void DataLoader::loadItems()
         item.charges =
             tokens.size() > 5 ? parseIntOrThrow(tokens[5], "data/items.txt", lineNumber, "charges", item.id) : 0;
         item.useText = tokens.size() > 6 ? tokens[6] : "";
-        items[item.id] = item;
+        requireNonNegative(item.value, "data/items.txt", lineNumber, "value", item.id);
+        requireNonNegative(item.charges, "data/items.txt", lineNumber, "charges", item.id);
+        insertRecordOrThrow(items, std::move(item), "data/items.txt", lineNumber);
     }
 }
 
@@ -114,7 +150,7 @@ void DataLoader::loadRivals()
         const auto tokens = DataUtils::split(line, '|');
         if (tokens.size() < 5)
         {
-            continue;
+            throwInvalidRecord("data/rivals.txt", lineNumber, "expected at least 5 fields");
         }
 
         Rival rival;
@@ -125,7 +161,13 @@ void DataLoader::loadRivals()
         rival.atk = parseIntOrThrow(tokens[4], "data/rivals.txt", lineNumber, "atk", rival.id);
         rival.attackText = tokens.size() > 5 ? tokens[5] : "";
         rival.defeatText = tokens.size() > 6 ? tokens[6] : "";
-        rivals[rival.id] = rival;
+        if (rival.maxHp <= 0)
+        {
+            throwInvalidRecord("data/rivals.txt", lineNumber,
+                               "record '" + rival.id + "' must have positive maxHp");
+        }
+        requireNonNegative(rival.atk, "data/rivals.txt", lineNumber, "atk", rival.id);
+        insertRecordOrThrow(rivals, std::move(rival), "data/rivals.txt", lineNumber);
     }
 }
 
@@ -134,8 +176,10 @@ void DataLoader::loadLogs()
     std::unique_ptr<std::istream> stream = openDataStream("data/logs.txt", EmbeddedData::kLogsText);
 
     std::string line;
+    int lineNumber = 0;
     while (std::getline(*stream, line))
     {
+        ++lineNumber;
         DataUtils::stripUtf8Bom(line);
         if (line.empty() || line[0] == '#')
         {
@@ -145,14 +189,14 @@ void DataLoader::loadLogs()
         const auto tokens = DataUtils::split(line, '|');
         if (tokens.size() < 3)
         {
-            continue;
+            throwInvalidRecord("data/logs.txt", lineNumber, "expected at least 3 fields");
         }
 
         LogEntry log;
         log.id = tokens[0];
         log.name = tokens[1];
         log.body = DataUtils::decodeEscapes(tokens[2]);
-        logs[log.id] = log;
+        insertRecordOrThrow(logs, std::move(log), "data/logs.txt", lineNumber);
     }
 }
 
@@ -174,7 +218,7 @@ void DataLoader::loadLocations()
         const auto tokens = DataUtils::split(line, '|');
         if (tokens.size() < 4)
         {
-            continue;
+            throwInvalidRecord("data/locations.txt", lineNumber, "expected at least 4 fields");
         }
 
         Location location;
@@ -187,22 +231,46 @@ void DataLoader::loadLocations()
             const auto separator = exitToken.find(':');
             if (separator == std::string::npos)
             {
-                continue;
+                throwInvalidRecord("data/locations.txt", lineNumber, "exit must use direction:target format");
             }
 
             const auto direction = exitToken.substr(0, separator);
             const auto target = exitToken.substr(separator + 1);
-            location.exits[direction] = target;
+            if (direction.empty() || target.empty())
+            {
+                throwInvalidRecord("data/locations.txt", lineNumber, "exit direction and target must not be empty");
+            }
+
+            if (!location.exits.emplace(direction, target).second)
+            {
+                throwInvalidRecord("data/locations.txt", lineNumber, "duplicate exit direction '" + direction + "'");
+            }
         }
 
         if (tokens.size() > 4 && !tokens[4].empty())
         {
             location.itemIds = DataUtils::split(tokens[4], ',');
+            for (const std::string &itemId : location.itemIds)
+            {
+                if (items.find(itemId) == items.end())
+                {
+                    throwInvalidRecord("data/locations.txt", lineNumber,
+                                       "location '" + location.id + "' references unknown item '" + itemId + "'");
+                }
+            }
         }
 
         if (tokens.size() > 5 && !tokens[5].empty())
         {
             location.logIds = DataUtils::split(tokens[5], ',');
+            for (const std::string &logId : location.logIds)
+            {
+                if (logs.find(logId) == logs.end())
+                {
+                    throwInvalidRecord("data/locations.txt", lineNumber,
+                                       "location '" + location.id + "' references unknown log '" + logId + "'");
+                }
+            }
         }
 
         if (tokens.size() > 6 && !tokens[6].empty())
@@ -215,18 +283,23 @@ void DataLoader::loadLocations()
             }
             else
             {
-                throw std::runtime_error("Unknown rival id in data/locations.txt at line " +
-                                         std::to_string(lineNumber) + " for location '" + location.id + "': '" +
-                                         location.rivalId + "'.");
+                throwInvalidRecord("data/locations.txt", lineNumber,
+                                   "location '" + location.id + "' references unknown rival '" + location.rivalId +
+                                       "'");
             }
         }
 
-        locations[location.id] = location;
+        insertRecordOrThrow(locations, std::move(location), "data/locations.txt", lineNumber);
     }
 }
 
-void DataLoader::validateLocationLinks()
+void DataLoader::validateGameData()
 {
+    if (locations.find("dock") == locations.end())
+    {
+        throw std::runtime_error("Missing required location 'dock' in data/locations.txt.");
+    }
+
     for (const auto &[locationId, location] : locations)
     {
         for (const auto &[direction, targetId] : location.exits)

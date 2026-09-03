@@ -25,5 +25,5 @@ class DataLoader
     static void loadLogs();
     static void loadRivals();
     static void loadLocations();
-    static void validateLocationLinks();
+    static void validateGameData();
 };
