@@ -1,6 +1,11 @@
 #include "Data/DataUtils.h"
 
+#include <array>
 #include <sstream>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 namespace DataUtils
 {
@@ -52,5 +57,19 @@ void stripUtf8Bom(std::string &text)
     {
         text.erase(0, 3);
     }
+}
+
+std::filesystem::path executableDirectory()
+{
+#ifdef _WIN32
+    std::array<wchar_t, MAX_PATH> buffer{};
+    const DWORD length = GetModuleFileNameW(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
+    if (length > 0 && length < buffer.size())
+    {
+        return std::filesystem::path(buffer.data()).parent_path();
+    }
+#endif
+
+    return std::filesystem::current_path();
 }
 } // namespace DataUtils

@@ -18,7 +18,7 @@ namespace
 {
 std::unique_ptr<std::istream> openDataStream(const char *filePath, std::string_view embeddedText)
 {
-    auto file = std::make_unique<std::ifstream>(filePath);
+    auto file = std::make_unique<std::ifstream>(DataUtils::executableDirectory() / filePath);
     if (file->is_open())
     {
         return file;

@@ -14,7 +14,7 @@ namespace
 {
 std::unique_ptr<std::istream> openStringsStream()
 {
-    auto file = std::make_unique<std::ifstream>("data/strings.txt");
+    auto file = std::make_unique<std::ifstream>(DataUtils::executableDirectory() / "data/strings.txt");
     if (file->is_open())
     {
         return file;
