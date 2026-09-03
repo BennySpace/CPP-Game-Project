@@ -40,7 +40,10 @@ void Game::run()
             lastCommand = command;
             CommandLogger::logCommand(command);
             lastResult = executeCommand(command);
-            ConsoleUI::renderFrame(lastCommand, buildViewModel(lastResult));
+            if (!isGameOver || lastResult.view != ViewKind::None)
+            {
+                ConsoleUI::renderFrame(lastCommand, buildViewModel(lastResult));
+            }
         }
 
         if (inputClosed)
