@@ -89,7 +89,7 @@ target_include_directories(${APP_TARGET} PRIVATE
 # Prefer strict warnings in development to catch portability and type issues early.
 if(ENABLE_WARNINGS)
     if(MSVC)
-        target_compile_options(${APP_TARGET} PRIVATE /W4 /permissive-)
+        target_compile_options(${APP_TARGET} PRIVATE /W4 /permissive- /EHsc)
     else()
         target_compile_options(${APP_TARGET} PRIVATE
             -Wall
