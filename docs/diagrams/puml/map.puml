@@ -1,0 +1,36 @@
+@startuml
+title Echoes of the Majestic — карта локаций
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam linetype ortho
+skinparam nodesep 100
+skinparam ranksep 80
+top to bottom direction
+
+rectangle "Стыковочный отсек\ndock\nСТАРТ: 85 HP\nПредмет: pistol" as LocDock #DDEEFF
+rectangle "Входной отсек\nintake" as LocIntake
+rectangle "Хирургический медотсек\nmedbay\nПредмет: kit\nВраг: husk_drifter (14 HP, атака 5)\nЖурнал: medbay_body" as LocMedbay
+rectangle "Служебный архив\narchive\nПредмет: alpha\nЖурнал: archive_signal" as LocArchive
+rectangle "Механический цех\nmachine_shop\nПредмет: cutter" as LocShop
+rectangle "Пост охраны\nsecurity\nПредметы: keycard, lens\nВраг: warden_spine (26 HP, атака 10)\nЖурнал: security_station" as LocSecurity
+rectangle "Реакторная шахта\nreactor_spine\nВраг: root_heart (34 HP, атака 12)\nЖурнал: reactor_resonance\nПобеда над врагом → root_heart_destroyed" as LocReactor #FFE0DD
+rectangle "Командный мостик\ncommand_bridge\nИспользовать lens при наличии alpha\n→ beacon_online" as LocBridge #FFF0CC
+rectangle "Ангар шаттлов\nshuttle_bay\nПОБЕДА при обоих флагах:\nbeacon_online + root_heart_destroyed" as LocShuttle #DDF2DD
+
+LocDock -down-> LocIntake : south
+LocIntake -up-> LocDock : north
+LocIntake -left-> LocMedbay : west
+LocMedbay -right-> LocIntake : east
+LocIntake -down-> LocArchive : south
+LocArchive -up-> LocIntake : north
+LocArchive -right-> LocShop : east
+LocShop -left-> LocArchive : west
+LocArchive -down-> LocSecurity : south
+LocSecurity -up-> LocArchive : north
+LocShop -right-> LocReactor : east
+LocReactor -left-> LocShop : west
+LocSecurity -right-> LocBridge : east [есть keycard]
+LocBridge -left-> LocSecurity : west
+LocBridge -right-> LocShuttle : east
+LocShuttle -left-> LocBridge : west [есть keycard]
+@enduml

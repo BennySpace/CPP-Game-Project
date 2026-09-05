@@ -1,0 +1,213 @@
+@startuml
+title Echoes of the Majestic — диаграмма классов
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+hide empty members
+top to bottom direction
+
+package "Core — логика" {
+  class Game {
+    - player : Player
+    - isGameOver : bool
+    + run() : void
+    + executeCommand(rawCommand : string) : GameCommandResult
+    - resetSession() : void
+    - processCommand(command : ParsedCommand) : GameCommandResult
+    - handleMove(direction : string) : GameCommandResult
+    - handleTake(itemId : string) : GameCommandResult
+    - handleUse(itemId : string) : GameCommandResult
+    - handleRead(target : string) : GameCommandResult
+    - handleAttack() : GameCommandResult
+    - handleInspect(target : string) : GameCommandResult
+    - applyEndState(result : GameCommandResult&) : void
+    - buildViewModel(result : GameCommandResult) : GameViewModel
+  }
+  class Player {
+    - currentLocation : string
+    - health : int
+    - maxHealth : int
+    - baseAttack : int
+    - inventory : vector<string>
+    - knownLogs : vector<string>
+    - weaponCharges : unordered_map<string, int>
+    - activeWeaponId : string
+    - activeWeaponBonus : int
+    - flags : set<string>
+    + takeDamage(damage : int) : void
+    + heal(amount : int) : void
+    + getAttack() : int
+    + addItem(itemId : string) : void
+    + removeItem(itemId : string) : void
+    + learnLog(logId : string) : void
+    + armWeapon(itemId : string, attackBonus : int, maxCharges : int) : void
+    + consumeActiveWeaponCharge() : int
+    + hasFlag(flag : string) : bool
+    + addFlag(flag : string) : void
+  }
+  class CommandParser {
+    + {static} parse(rawCommand : string) : ParsedCommand
+  }
+  class ParsedCommand <<struct>> {
+    + canonicalVerb : string
+    + argument : string
+    + isValid : bool
+  }
+  class GameEventMessageMapper {
+    + {static} appendMessages(result : GameCommandResult&) : void
+  }
+}
+
+package "Entities — данные мира" {
+  class Item <<struct>> {
+    + id : string
+    + name : string
+    + description : string
+    + type : string
+    + value : int
+    + charges : int
+    + useText : string
+  }
+  class Location <<struct>> {
+    + id : string
+    + name : string
+    + description : string
+    + exits : map<string, string>
+    + itemIds : vector<string>
+    + logIds : vector<string>
+    + rivalId : string
+    + rivalHp : int
+  }
+  class Rival <<struct>> {
+    + id : string
+    + name : string
+    + description : string
+    + maxHp : int
+    + atk : int
+    + attackText : string
+    + defeatText : string
+  }
+  class LogEntry <<struct>> {
+    + id : string
+    + name : string
+    + body : string
+  }
+}
+
+package "Data — загрузка" {
+  class DataLoader {
+    - {static} items : map<string, Item>
+    - {static} logs : map<string, LogEntry>
+    - {static} rivals : map<string, Rival>
+    - {static} locations : map<string, Location>
+    + {static} loadAll() : void
+    + {static} getItems() : const map<string, Item>&
+    + {static} getLogs() : const map<string, LogEntry>&
+    + {static} getRivals() : const map<string, Rival>&
+    + {static} getLocations() : map<string, Location>&
+  }
+  class TextResources {
+    - {static} strings : map<string, string>
+    + {static} loadAll() : void
+    + {static} get(key : string) : string
+    + {static} format(key : string, replacements : map) : string
+  }
+}
+
+package "Core — модель представления" {
+  class GameCommandResult <<struct>> {
+    + view : ViewKind
+  }
+  class GameEvent <<struct>> {
+    + type : GameEventType
+    + primaryId : string
+    + amount : int
+    + detail : string
+  }
+  class OutputMessage <<struct>> {
+    + tone : MessageTone
+    + text : string
+  }
+  class GameViewModel <<struct>> {
+    + mapCurrentLocationName : string
+  }
+  class GameHudView <<struct>> {
+    + currentLocationName : string
+    + health : int
+    + maxHealth : int
+    + attack : int
+    + threatName : string
+    + threatHp : int
+    + activeWeaponName : string
+    + activeWeaponCharges : int
+    + hasAccessKey : bool
+    + hasLens : bool
+    + hasKeycard : bool
+    + beaconOnline : bool
+    + rootHeartDestroyed : bool
+  }
+  class GameLocationView <<struct>> {
+    + name : string
+    + description : string
+    + rivalName : string
+    + rivalHp : int
+  }
+  class GameItemView <<struct>> {
+    + name : string
+    + id : string
+    + detail : string
+  }
+  class GameLogView <<struct>> {
+    + name : string
+    + id : string
+    + detail : string
+  }
+  class GameExitView <<struct>> {
+    + directionId : string
+    + targetName : string
+  }
+}
+
+class ConsoleUI {
+  + {static} renderFrame(lastCommand : string, viewModel : GameViewModel) : void
+  + {static} waitForContinue() : bool
+  + {static} showCreditsAndReplay(victory : bool) : bool
+}
+
+Game "1" *-- "1" Player
+Game ..> CommandParser
+CommandParser ..> ParsedCommand : создаёт
+Game ..> DataLoader
+Game ..> TextResources
+Game ..> GameCommandResult : создаёт
+Game ..> GameViewModel : строит
+Game ..> GameEventMessageMapper
+Game ..> ConsoleUI : вызывает
+GameEventMessageMapper ..> GameCommandResult : заполняет messages
+GameEventMessageMapper ..> DataLoader
+GameEventMessageMapper ..> TextResources
+ConsoleUI ..> GameViewModel : отображает
+ConsoleUI ..> TextResources
+DataLoader "1" *-- "0..*" Item : static items
+DataLoader "1" *-- "0..*" Location : static locations
+DataLoader "1" *-- "0..*" Rival : static rivals
+DataLoader "1" *-- "0..*" LogEntry : static logs
+Player ..> Location : currentLocation (ID)
+Player ..> Item : inventory / activeWeaponId (ID)
+Player ..> LogEntry : knownLogs (ID)
+Location ..> Location : exits (ID)
+Location ..> Item : itemIds
+Location ..> LogEntry : logIds
+Location ..> Rival : rivalId
+GameCommandResult *-- "0..*" GameEvent : events
+GameCommandResult *-- "0..*" OutputMessage : messages
+GameViewModel *-- "1" GameHudView : hud
+GameViewModel *-- "1" GameCommandResult : result
+GameViewModel *-- "0..1" GameLocationView : location
+GameHudView *-- "0..*" GameItemView : inventory
+GameHudView *-- "0..*" GameLogView : knownLogs
+GameHudView *-- "0..*" GameExitView : exits
+GameLocationView *-- "0..*" GameItemView : nearbyItems
+GameLocationView *-- "0..*" GameLogView : nearbyLogs
+GameLocationView *-- "0..*" GameExitView : exits
+@enduml

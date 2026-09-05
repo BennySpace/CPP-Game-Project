@@ -1,0 +1,75 @@
+@startuml
+title Echoes of the Majestic — диаграмма компонентов
+skinparam defaultFontName Arial
+skinparam componentStyle rectangle
+skinparam shadowing false
+left to right direction
+
+actor "Игрок" as User
+package "majestic_station.exe — единое приложение" {
+  component "Точка входа\nsrc/main.cpp" as Main
+  package "Core" {
+    component "Game\nЦикл, команды, бой, осмотр,\nусловия финала, построение ViewModel" as Game
+    component "Player\nСостояние игрока" as Player
+    component "CommandParser\nРазбор команд и псевдонимов" as Parser
+    component "ConsoleInput\nВвод строк" as Input
+    component "CommandLogger\nЖурнал команд и сессий" as Logger
+    component "GameEventMessageMapper\nСобытия → сообщения" as Mapper
+    component "GameCommandResult / GameViewModel\nКонтракт логики и интерфейса" as VM
+    component "TextUtils\nНормализация текста" as TextUtils
+  }
+  package "UI" as UIPackage {
+    component "ConsoleUI\nКадр, HUD, меню, финалы" as ConsoleUIComponent
+    component "ConsoleDecor\nANSI-оформление" as Decor
+    component "StationMap\nASCII-карта" as Map
+  }
+  package "Data" {
+    component "DataLoader\nЗагрузка и проверка мира" as Loader
+    component "TextResources\nТексты и шаблоны" as Text
+    component "DataUtils\nРазбор строк данных" as Utils
+    artifact "Data/EmbeddedData.h\nВстроенные текстовые ресурсы" as Embedded
+  }
+  component "Entities\nItem, Location, Rival, LogEntry" as Entities
+}
+folder "data/ — внешние ресурсы" {
+  artifact "items.txt / locations.txt\nrivals.txt / logs.txt" as World
+  artifact "strings.txt" as Strings
+}
+artifact "majestic_station_commands.log" as Log
+component "CMake + GenerateEmbeddedData.cmake\nЭтап сборки" as Build
+
+User --> Input : команды
+ConsoleUIComponent --> User : вывод
+Main --> Game : run()
+Main --> Logger : настройка
+Game --> Input : readLine()
+Game --> Logger : команды / исход сессии
+Logger --> Log : запись, если включена
+Game --> Parser : parse()
+Parser --> TextUtils
+Game --> TextUtils
+Game --> Player : изменяет состояние
+Game --> Loader : мир / сброс сессии
+Game --> Entities
+Game --> Mapper : appendMessages()
+Game --> VM : формирует
+Game --> ConsoleUIComponent : renderFrame() / меню
+Game --> Text
+Mapper --> VM : дополняет сообщения
+Mapper --> Loader
+Mapper --> Text
+ConsoleUIComponent --> VM : читает
+ConsoleUIComponent --> Decor
+ConsoleUIComponent --> Map
+ConsoleUIComponent --> Text
+Loader --> Entities : создаёт и хранит
+Loader --> Utils
+Text --> Utils
+Loader --> World : чтение
+Text --> Strings : чтение
+Loader --> Embedded : резервный источник
+Text --> Embedded : резервный источник
+Build ..> World : читает при сборке
+Build ..> Strings : читает при сборке
+Build ..> Embedded : генерирует
+@enduml
