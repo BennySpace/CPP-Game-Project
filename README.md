@@ -37,6 +37,15 @@ The player boards a drifting station, explores connected compartments, fights th
 - `include/Entities` - game entities: player, item, location, rival, log entry
 - `data` - editable game content and text assets
 
+## Diagrams
+
+| Diagram | Preview | PlantUML source |
+| --- | --- | --- |
+| Class diagram | [PNG](docs/diagrams/png/classes.png) | [classes.puml](docs/diagrams/puml/classes.puml) |
+| Component diagram | [PNG](docs/diagrams/png/components.png) | [components.puml](docs/diagrams/puml/components.puml) |
+| Location map | [PNG](docs/diagrams/png/map.png) | [map.puml](docs/diagrams/puml/map.puml) |
+| Walkthrough | [PNG](docs/diagrams/png/walkthrough.png) | [walkthrough.puml](docs/diagrams/puml/walkthrough.puml) |
+
 ## Build
 
 ### CMake Presets
